@@ -11,8 +11,8 @@ import toast from "react-hot-toast";
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [seletedMovie, setSelectedMovie] = useState<Movie | undefined>(undefined);
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [seletedMovie, setSelectedMovie] = useState<Movie[]>([]);
   const searchMovie = async (value: string): Promise<void> => {
     const newMovies = (await fetchMovies(value)) as Movie[];
     if (newMovies.length === 0) {
@@ -21,16 +21,15 @@ export default function App() {
     }
     setMovies(newMovies);
   };
-  const openModal = (): void => setModalOpen(true);
-  const closeModal = (): void => {
-    setSelectedMovie(undefined);
-    setModalOpen(false);
-  };
+    const openModal = (): void => setModalOpen(true);
+    const closeModal = ():void => {
+        setSelectedMovie([]);
+        setModalOpen(false);
+    }
     const selectMovie = (id: number): void => {
-    const selectedMovie: Movie | undefined = movies.find(movie => movie.id === id);
-    setSelectedMovie(selectedMovie);
-    openModal();
-  };
+        setSelectedMovie(movies.filter(movie => movie.id === id));
+        openModal();
+    };
 
   return (
     <div className={css.app}>
@@ -38,7 +37,7 @@ export default function App() {
       <ErrorMessage />
       <Loader />
       <MovieGrid movies={movies} onSelect={selectMovie} />
-      {modalOpen && <MovieModal movie={seletedMovie} onClose={closeModal} />}
+      {modalOpen && <MovieModal movie={seletedMovie} onClose={closeModal}/>}
     </div>
   );
 }
