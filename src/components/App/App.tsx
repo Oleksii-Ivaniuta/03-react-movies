@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [seletedMovie, setSelectedMovie] = useState<Movie[]>([]);
+  const [seletedMovie, setSelectedMovie] = useState<Movie | undefined>(undefined);
   const searchMovie = async (value: string): Promise<void> => {
     const newMovies = (await fetchMovies(value)) as Movie[];
     if (newMovies.length === 0) {
@@ -23,11 +23,12 @@ export default function App() {
   };
   const openModal = (): void => setModalOpen(true);
   const closeModal = (): void => {
-    setSelectedMovie([]);
+    setSelectedMovie(undefined);
     setModalOpen(false);
   };
-  const selectMovie = (id: number): void => {
-    setSelectedMovie(movies.filter((movie) => movie.id === id));
+    const selectMovie = (id: number): void => {
+    const selectedMovie: Movie | undefined = movies.find(movie => movie.id === id);
+    setSelectedMovie(selectedMovie);
     openModal();
   };
 
