@@ -7,24 +7,35 @@ import MovieModal from "../MovieModal/MovieModal";
 import SearchBar from "../SearchBar/SearchBar";
 import css from "./App.module.css";
 import type { Movie } from "../../types/movie";
-
+import toast from "react-hot-toast";
 
 export default function App() {
-    const [movies, setMovies] = useState<Movie[]>([]);
-    const searchMovie = async (value: string) => {
-        const newMovies = await fetchMovies(value) as Movie[];
-        setMovies(newMovies);
+  const [movies, setMovies] = useState<Movie[]>([]);
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [seletedMovie, setSelectedMovie] = useState<Movie[]>([]);
+  const searchMovie = async (value: string): Promise<void> => {
+    const newMovies = (await fetchMovies(value)) as Movie[];
+    if (newMovies.length === 0) {
+      toast.error("No movies found for your request.");
+      return;
     }
+    setMovies(newMovies);
+  };
     const selectMovie = (id: number): void => {
-        console.log(`select movie ${id}`);
+        setSelectedMovie(movies.filter(movie => movie.id === id));
+        setModalOpen(true);
+    };
+    const closeModal = ():void => {
+        setSelectedMovie([]);
+        setModalOpen(false);
     }
-    return (
-        <div className={css.app}>
-        <SearchBar onSubmit={searchMovie}/>
+  return (
+    <div className={css.app}>
+      <SearchBar onSubmit={searchMovie} />
       <ErrorMessage />
       <Loader />
-      <MovieGrid movies={movies} onSelect={selectMovie}  />
-      <MovieModal />
+      <MovieGrid movies={movies} onSelect={selectMovie} />
+      {modalOpen && <MovieModal movie={seletedMovie} onClose={closeModal}/>}
     </div>
   );
 }

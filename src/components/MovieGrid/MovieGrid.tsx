@@ -18,9 +18,9 @@ export default function MovieGrid({ onSelect, movies }: MovieGridProps) {
             key={movie.id}
           >
             <div className={css.card}>
-              <img
-                className={css.image}
-                src={movie.poster_path}
+                    <img
+                        className={css.image}
+                        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
                 loading="lazy"
               />
