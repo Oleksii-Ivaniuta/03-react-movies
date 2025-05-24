@@ -7,14 +7,14 @@ import MovieModal from "../MovieModal/MovieModal";
 import SearchBar from "../SearchBar/SearchBar";
 import css from "./App.module.css";
 import type { Movie } from "../../types/movie";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
-    const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [seletedMovie, setSelectedMovie] = useState<Movie[]>([]);
-  const [loader, setLoader] = useState(false);
-  const [error, setError] = useState(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [loader, setLoader] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
   const searchMovie = async (value: string): Promise<void> => {
     setMovies([]);
     setError(false);
@@ -26,29 +26,30 @@ export default function App() {
         return;
       }
       setMovies(newMovies);
-    }
-    catch {
+    } catch {
       setError(true);
-    }
-    finally {
+    } finally {
       setLoader(false);
     }
   };
-    const openModal = (): void => setModalOpen(true);
-    const closeModal = ():void => {
-        setSelectedMovie([]);
-        setModalOpen(false);
-    }
-    const selectMovie = (id: number): void => {
-        setSelectedMovie(movies.filter(movie => movie.id === id));
-        openModal();
-    };
+  const openModal = (): void => setModalOpen(true);
+  const closeModal = (): void => {
+    setSelectedMovie(null);
+    setModalOpen(false);
+  };
+  const selectMovie = (movie: Movie): void => {
+    setSelectedMovie(movie);
+    openModal();
+  };
 
   return (
     <div className={css.app}>
+      <Toaster position="top-center" reverseOrder={false} />
       <SearchBar onSubmit={searchMovie} />
-      {movies.length !== 0 && <MovieGrid movies={movies} onSelect={selectMovie} />}
-      {modalOpen && <MovieModal movie={seletedMovie} onClose={closeModal} />}
+      {movies.length !== 0 && (
+        <MovieGrid movies={movies} onSelect={selectMovie} />
+      )}
+      {modalOpen && <MovieModal movie={selectedMovie} onClose={closeModal} />}
       {error && <ErrorMessage />}
       {loader && <Loader />}
     </div>
